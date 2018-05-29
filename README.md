@@ -55,6 +55,7 @@ SessionInfo
 Analysis has been done in the following session environment. 
 
 #sessionInfo()
+
 R version 3.4.4 (2018-03-15)
 Platform: x86_64-redhat-linux-gnu (64-bit)
 Running under: CentOS Linux 7 (Core)
