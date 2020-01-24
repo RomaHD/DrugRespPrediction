@@ -1,11 +1,12 @@
 # 13.02.2018 collecting top 500 features + p-values
 # edited on 20.04.18
 
-path <- "/data/kurilov/genestack/phd/work_2018/DrugRespPrediction/"
+path <- "/abi/data/kurilov/work_2018/DrugRespPrediction/"
 setwd(file.path(path, "analysis1"))
 
 library(survcomp)
 library(caret)
+library(ggplot2)
 
 load("ccle_table.RData")
 load("ctrp_table.RData")
@@ -24,6 +25,7 @@ gam_fs <- function(x, y) {
 
 drugs <- c("Erlotinib",  "Paclitaxel", "Lapatinib",  "Nilotinib", "Nutlin-3","PLX4720", "Sorafenib")
 datasets <- c("ccle", "ctrp", "gdsc")
+metrics <- c("ic50","auc", "viab")
 
 features <- matrix(NA, ncol=63, nrow=500)
 pv <- matrix(NA, ncol=63, nrow=500)
@@ -76,5 +78,7 @@ colnames(table) <- c("number", "drug", "metric")
 table$drug <- factor(table$drug, levels=drugs)
 table$metric <- factor(table$metric, levels=metrics)
 
-g1 <- ggplot(data=table, aes(x=drug, y=number)) + geom_bar(aes(fill=metric), stat="identity", position="dodge") + labs(y="# of common features",x=NULL) + theme(legend.text=element_text(size=12), legend.position = "bottom")
+theme_set(theme_bw(base_size = 18))
+g1 <- ggplot(data=table, aes(x=drug, y=number)) + geom_bar(aes(fill=metric), stat="identity", position="dodge") + labs(y="# of common features",x=NULL) + 
+      geom_hline(yintercept=42, colour="red", linetype="dotted")+ theme(legend.text=element_text(size=12), legend.position = "bottom")
 ggsave("fig_2c.pdf", plot=g1)

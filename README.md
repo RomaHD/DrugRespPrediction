@@ -1,18 +1,18 @@
-Drug response prediction in cell lines and xenografts
+Assessment of modelling strategies for drug response prediction in cell lines and xenografts
 =================================================================
 
 
 Abstract
 --------
 
-Data from number of large high-throughput drug response screens have became available to the scientific community over the last five years. Although many efforts of using this information for drug response prediction have been made, our ability to explain or accurately predict drug response using genetic data remains limited. In order to systematically examine how different aspects of modelling affect resulting prediction accuracy, we built here a range of models for seven drugs (erlotinib, pacliatxel, lapatinib, PLX4720, sorafenib, nutlin-3 and nilotinib) using data from the largest available cell line and xenografts drug sensitivity screens. We found that the drug response metric, the choice of molecular data type and the number of training samples have a substantial impact on prediction accuracy. We also compared a task of drug response prediction with tissue type prediction and found that unlike drug response, tissue type can be predicted with high accuracy in cell lines and xenografts. Furthermore, we assessed our ability to predict drug response in four xenograft cohorts treated with of three drugs each (erlotinib, gemcitabine or paclitaxel) using models trained on cell line data. We managed to predict response in an erlotinib-treated cohort with a reasonable accuracy but were unable to correctly predict responses in cohorts treated with gemcitabine or paclitaxel.
+Data from several large high-throughput drug response screens have become available to the scientific community recently. Although many efforts have been made to use this information to predict drug sensitivity, our ability to accurately predict drug response based on genetic data remains limited. In order to systematically examine how different aspects of modelling affect the resulting prediction accuracy, we built a range of models for seven drugs (erlotinib, pacliatxel, lapatinib, PLX4720, sorafenib, nutlin-3 and nilotinib) using data from the largest available cell line and xenograft drug sensitivity screens. We found that the drug response metric, the choice of the molecular data type and the number of training samples have a substantial impact on prediction accuracy. We also compared the tasks of drug response prediction with tissue type prediction and found that, unlike for drug response, tissue type can be predicted with high accuracy. Furthermore, we assessed our ability to predict drug response in four xenograft cohorts (treated either with erlotinib, gemcitabine or paclitaxel) using models trained on cell line data. We could predict response in an erlotinib-treated cohort with a moderate accuracy (correlation≈0.5), but were unable to correctly predict responses in cohorts treated with gemcitabine or paclitaxel.
 
 Citation
 --------
 
 To cite this work in publication, use
 
-Kurilov, R., Brors, B. Drug response prediction in cell lines and xenografts (2018)
+Kurilov R., Haibe-Kains B., Brors B. 2020. Assessment of modelling strategies for drug response prediction in cell lines and xenografts. _Scientific Reports_
 
 
 Reproducibility of the Analysis Results

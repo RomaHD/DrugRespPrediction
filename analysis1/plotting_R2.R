@@ -194,3 +194,17 @@ for (i in 1:3){
 
 fig_s3 <- grid.arrange(arrangeGrob(p1,p2,p3, nrow=1), leg, nrow=2, heights=c(10, 1))
 ggsave("fig_s9.pdf",plot=fig_s3)
+
+#.8 /2019/ results with GR_AOC metric and results with higher number of varibles(500-5000)  
+# 8.1 correlation results
+cor_res <- cbind(drugs, R2=c(0.046, 0.101, 0.099, -0.0167, -0.0338, -0.0843, 0.0248))
+cor_res <- data.frame(cor_res)
+cor_res$R2 <- as.numeric(as.character(cor_res$R2))
+ggplot(cor_res, aes(x=drugs, y=R2)) + geom_bar(stat="identity") + ylim(-1,1) 
+
+# 8.2 results for different metrics including GR_AOC metric
+metrics_res <- cbind(metrics=c("AUC", "GR_AOC", "IC50", "viability_1uM"), R2=c(0.176, 0.143, 0.091, 0.185))
+metrics_res <- data.frame(metrics_res)
+metrics_res$R2 <- as.numeric(as.character(metrics_res$R2))
+metrics_res$metrics <- factor(metrics_res$metrics, levels=c("IC50","AUC", "viability_1uM","GR_AOC"))
+ggplot(metrics_res, aes(x=metrics, y=R2)) + geom_bar(stat="identity")

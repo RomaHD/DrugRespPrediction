@@ -3,7 +3,8 @@
 install.packages("lattice")
 library(lattice)
 
-path <- "/data/kurilov/genestack/phd/work_2018/DrugRespPrediction/"
+#path <- "/data/kurilov/genestack/phd/work_2018/DrugRespPrediction/"
+path <- "/abi/data/kurilov/work_2018/DrugRespPrediction/"
 setwd(file.path(path, "analysis2"))
 source("functions.R")
 
@@ -51,20 +52,20 @@ colnames(d12) <- nn
 colnames(d13) <- nn
 colnames(d14) <- nn
 
-titles <- c("Doubling time (cell lines)",
-            "Slope (xenografts)",
-            "Erlotinib (cell lines)",
-            "Gemcitabine (cell lines)",
-            "Paclitaxel, bresat (cell lines)",
-            "Paclitaxel, lung (cell lines)",
-            "Erlotinib, volume (xenografts)",
-            "Erlotinib, slope (xenografts)",
-            "Gemcitabine, volume (xenografts)",
-            "Gemcitabine, slope (xenografts)",
-            "Paclitaxel, BRCA, volume (xenografts)",
-            "Paclitaxel, BRCA, slope (xenografts)",
-            "Paclitaxel, NSCLC, volume (xenografts)",
-            "Paclitaxel, NSCLC, slope (xenografts)")
+titles <- c("Doubling time \n(cell lines)",
+            "Slope \n(xenografts)",
+            "Erlotinib \n(cell lines)",
+            "Gemcitabine \n(cell lines)",
+            "Paclitaxel \nbresat (cell lines)",
+            "Paclitaxel \nlung (cell lines)",
+            "Erlotinib \nvolume (xenografts)",
+            "Erlotinib \nslope (xenografts)",
+            "Gemcitabine \nvolume (xenografts)",
+            "Gemcitabine \nslope (xenografts)",
+            "Paclitaxel, BRCA \nvolume (xenografts)",
+            "Paclitaxel, BRCA \nslope (xenografts)",
+            "Paclitaxel, NSCLC \nvolume (xenografts)",
+            "Paclitaxel, NSCLC \nslope (xenografts)")
 
 table_lat <- matrix(NA, ncol=3,nrow=0)
 
@@ -82,13 +83,15 @@ colnames(table_lat) <- c("observed","predicted","label")
 
 # plotting
 
-pdf(file="fig_5a.pdf", width=11.7, height=8.3)
+pdf(file="fig_5a.pdf", width=13, height=8.3)
 xyplot(predicted ~ observed | label, table_lat,
        grid = TRUE,
        scales=list(relation="free"),
        layout=c(5,3),
-       par.strip.text = list(cex=0.7, lines=2),
+       par.strip.text = list(cex=0.9, lines=3.5),
        skip=c(T,F,F,F,F,F,F,F,F,F,F,F,F,F,F),
+       xlab="observed drug response values",
+       ylab="predicted drug response values",
        index.cond=list(c(8,10,12,14,2,7,9,11,13,1,3,4,5,6)),
        panel = function(x, y, ...) {
          panel.xyplot(x, y, ...)  ## First call the default panel function for 'xyplot'

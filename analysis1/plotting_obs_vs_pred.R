@@ -1,7 +1,8 @@
 #4.02.2018, observed vs. predicted values: analysis I
 # edited on 20.04.18
 
-path <- "/data/kurilov/genestack/phd/work_2018/DrugRespPrediction/"
+#path <- "/data/kurilov/genestack/phd/work_2018/DrugRespPrediction/"
+path <- "/abi/data/kurilov/work_2018/DrugRespPrediction/"
 setwd(file.path(path, "analysis1"))
 
 library(lattice)
@@ -12,14 +13,23 @@ load("gdsc_table.RData")
 
 load("raw_predictions2.RData")
 
+drugs <- c("Erlotinib",  "Paclitaxel", "Lapatinib",  "Nilotinib", "Nutlin-3","PLX4720", "Sorafenib")
+datasets <- c("ccle", "ctrp", "gdsc")
+tasks0 <- cbind(rep(c("ic50","auc", "viab"),times=1,each=21), rep(drugs,9), rep(datasets, times=3, each=7))
+colnames(tasks0) <- c("metric","drug","dataset")
+tasks0 <- as.data.frame(tasks0)
+
+colnames(raw_predictions) <- apply(tasks0, 1, function(x){paste(x, collapse="_")})
+
 # 1. Plotting Figure 3. with lattice
 tasks <- cbind(rep(c("ic50","auc", "viab"),times=1,each=3),
-               c("Paclitaxel", "Paclitaxel","Nilotinib","Nutlin-3","Nutlin-3","Sorafenib","Paclitaxel","Paclitaxel","Sorafenib"),
-               c("ctrp","gdsc","ctrp","ccle","ctrp","gdsc","gdsc","ccle","gdsc"))
+               rep(c("Paclitaxel","Nutlin-3","Sorafenib"), 3),
+               rep("ctrp",9))
 colnames(tasks) <- c("metric","drug","dataset")
 tasks <- as.data.frame(tasks)
 
-raw_predictions_sel <- raw_predictions[,c(9,16,11,26,33,42,58,44,63)]
+num <- match(apply(tasks, 1, function(x){paste(x, collapse="_")}), apply(tasks0, 1, function(x){paste(x, collapse="_")})) 
+raw_predictions_sel <- raw_predictions[,num]
 
 #for concordance index calculation
 library(survcomp)
@@ -40,7 +50,7 @@ for (i in 1:9)
   ds <- cbind(table[rownames(raw_predictions_sel)[n],paste(tasks$metric[i],tasks$drug[i], sep="_")],raw_predictions_sel[n,i])
   r2 <- signif((cor(ds[,1],ds[,2]))^2, digits=2)
   ci_val <- signif(ci(ds[,1],ds[,2]), digits = 2)
-  title <- paste(unlist(tasks[i,]), collapse=", ")
+  title <- paste(unlist(tasks[i,1:2]), collapse=", ")
   title <- paste0(title, "\nR2=",r2, "   conc. index=",ci_val)
   ds <- cbind(ds, title)
   
@@ -56,9 +66,10 @@ table_lat[,2] <- as.numeric(as.character(table_lat[,2]))
 table_lat$label <- gsub("ic50", "IC50", table_lat$label)
 table_lat$label <- gsub("auc", "AUC", table_lat$label)
 table_lat$label <- gsub("viab", "Viability_1uM", table_lat$label)
-table_lat$label <- gsub("ccle", "CCLE", table_lat$label)
-table_lat$label <- gsub("ctrp", "CTRP", table_lat$label)
-table_lat$label <- gsub("gdsc", "GDSC", table_lat$label)
+#table_lat$label <- gsub("ccle", "CCLE", table_lat$label)
+#table_lat$label <- gsub("ctrp", "CTRP", table_lat$label)
+#table_lat$label <- gsub("gdsc", "GDSC", table_lat$label)
+levels(table_lat$label) <- unique(table_lat$label)
 
 pdf(file="fig_3.pdf", height=8.3, width=11.7)
 xyplot(predicted ~ observed | label, table_lat,
@@ -66,14 +77,79 @@ xyplot(predicted ~ observed | label, table_lat,
        as.table=T,
        scales=list(relation="free"),
        layout=c(3,3),
-       par.strip.text = list(cex=0.9, lines=2),
+       par.strip.text = list(cex=1.3, lines=2),
        #skip=c(T,F,F,F,F,F,F,F,F,F,F,F,F,F,F),
-       index.cond=list(c(5,6,4,1,2,3,7,8,9)),
+       xlab="observed drug response values",
+       ylab="predicted drug response values",
+       index.cond=list(c(4,5,6,1,2,3,7,8,9)),
        panel = function(x, y, ...) {
          panel.xyplot(x, y, ...)  ## First call the default panel function for 'xyplot'
          panel.abline(a=c(0,1), lty=2)  ## Add a line
        })
 dev.off()
+
+# # 1. Plotting Figure 3. with lattice
+# tasks <- cbind(rep(c("ic50","auc", "viab"),times=1,each=3),
+#                c("Paclitaxel", "Paclitaxel","Nilotinib","Nutlin-3","Nutlin-3","Sorafenib","Paclitaxel","Paclitaxel","Sorafenib"),
+#                c("ctrp","gdsc","ctrp","ccle","ctrp","gdsc","gdsc","ccle","gdsc"))
+# colnames(tasks) <- c("metric","drug","dataset")
+# tasks <- as.data.frame(tasks)
+# 
+# raw_predictions_sel <- raw_predictions[,c(9,16,11,26,33,42,58,44,63)]
+# 
+# #for concordance index calculation
+# library(survcomp)
+# ci <- function(v1, v2) {
+#   value <- concordance.index(x=v1, surv.time=v2, surv.event=rep(1,length(v1)))
+#   return(1-value$c.index)
+# }
+# 
+# 
+# 
+# 
+# table_lat <- matrix(NA, ncol=3,nrow=0) 
+# for (i in 1:9)
+# {
+#   n <- which(!(is.na(raw_predictions_sel[,i])))
+#   table <- eval(parse(text = paste0(tasks$dataset[i], "_table")))
+#   
+#   ds <- cbind(table[rownames(raw_predictions_sel)[n],paste(tasks$metric[i],tasks$drug[i], sep="_")],raw_predictions_sel[n,i])
+#   r2 <- signif((cor(ds[,1],ds[,2]))^2, digits=2)
+#   ci_val <- signif(ci(ds[,1],ds[,2]), digits = 2)
+#   title <- paste(unlist(tasks[i,]), collapse=", ")
+#   title <- paste0(title, "\nR2=",r2, "   conc. index=",ci_val)
+#   ds <- cbind(ds, title)
+#   
+#   table_lat <- rbind(table_lat, ds)
+# }
+# 
+# colnames(table_lat) <- c("observed","predicted","label")
+# table_lat <- as.data.frame(table_lat)
+# table_lat[,1] <- as.numeric(as.character(table_lat[,1]))
+# table_lat[,2] <- as.numeric(as.character(table_lat[,2]))
+# 
+# #changing titles
+# table_lat$label <- gsub("ic50", "IC50", table_lat$label)
+# table_lat$label <- gsub("auc", "AUC", table_lat$label)
+# table_lat$label <- gsub("viab", "Viability_1uM", table_lat$label)
+# table_lat$label <- gsub("ccle", "CCLE", table_lat$label)
+# table_lat$label <- gsub("ctrp", "CTRP", table_lat$label)
+# table_lat$label <- gsub("gdsc", "GDSC", table_lat$label)
+# 
+# pdf(file="fig_3.pdf", height=8.3, width=11.7)
+# xyplot(predicted ~ observed | label, table_lat,
+#        grid = TRUE,
+#        as.table=T,
+#        scales=list(relation="free"),
+#        layout=c(3,3),
+#        par.strip.text = list(cex=0.9, lines=2),
+#        #skip=c(T,F,F,F,F,F,F,F,F,F,F,F,F,F,F),
+#        index.cond=list(c(5,6,4,1,2,3,7,8,9)),
+#        panel = function(x, y, ...) {
+#          panel.xyplot(x, y, ...)  ## First call the default panel function for 'xyplot'
+#          panel.abline(a=c(0,1), lty=2)  ## Add a line
+#        })
+# dev.off()
 
 
 # 2. Plotting Figures s5. with lattice

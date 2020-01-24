@@ -211,7 +211,7 @@ for (i in 1:16)
   
   table_lat <- rbind(table_lat, ds)
 }
-colnames(table_lat) <- c("observed","predicted","label")
+colnames(table_lat) <- c("predicted","observed","label")
 table_lat <- as.data.frame(table_lat)
 table_lat$observed <- as.numeric(as.character(table_lat$observed))
 table_lat$predicted <- as.numeric(as.character(table_lat$predicted))
@@ -229,13 +229,15 @@ dev.off()
 num <- c(grep("AUC",table_lat[,3]), grep("diff.", table_lat[,3]))
 table_lat2 <- table_lat[-num,]
 
-pdf(file="fig_5b.pdf", width=11.7, height=8.3)
+pdf(file="fig_5b.pdf", width=11.7, height=7)
 xyplot(predicted ~ observed | label, table_lat2,
        grid = TRUE,
        as.table=T,
        layout=c(4,2),
        scales=list(relation="free"),
-       par.strip.text = list(cex=1, lines=2),
-       index.cond=list(c(2,4,6,8,1,3,5,7)))
+       par.strip.text = list(cex=1.2, lines=2),
+       xlab="observed drug response values (volume or slope)",
+       ylab="predicted drug response values (AUC)",
+       index.cond=list(c(1,3,5,7,2,4,6,8)))
 dev.off()
 

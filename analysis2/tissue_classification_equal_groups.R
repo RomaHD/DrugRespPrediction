@@ -12,7 +12,8 @@ library(gam)
 library(dplyr)
 library(gplots)
 
-path <- "/data/kurilov/genestack/phd/work_2018/DrugRespPrediction/"
+#path <- "/data/kurilov/genestack/phd/work_2018/DrugRespPrediction/"
+path <- "/abi/data/kurilov/work_2018/DrugRespPrediction/"
 setwd(file.path(path, "analysis2"))
 source("functions.R")
 
@@ -52,6 +53,10 @@ colnames(res) <- c("accuracy", paste0("acc_",tissues))
 pred_obs <- matrix(NA, nrow=0, ncol=2)
 colnames(pred_obs) <- c("pred", "obs")
 
+library(doParallel)
+cl <- makePSOCKcluster(3)
+registerDoParallel(cl)
+
 for (i in 1:10){
   print(i)
   lung_sampl <- sample(t_table[which(t_table[,2]=="Lung"),1], 23)
@@ -72,11 +77,13 @@ for (i in 1:10){
   res[i,] <- temp_res[[1]]
   pred_obs <- rbind(pred_obs, temp_res[[2]])
 } 
+stopCluster(cl)
 
 write.table(res, file="res_tissue_gcsi_equal_groups.txt")
 write.table(pred_obs, file="pred_obs_tissue_gcsi_equal_groups.txt")
 
 # plotting
+pred_obs <- read.table("pred_obs_tissue_gcsi_equal_groups.txt")
 
 conf_table <- matrix(NA, nrow=length(tissues), ncol=length(tissues))
 rownames(conf_table) <- tissues
@@ -88,8 +95,9 @@ for (i in 1:length(tissues)){
     conf_table[i,j] <- pred_obs %>% filter(obs==tissues[i] & pred==tissues[j]) %>% nrow()
   }
 }
-pdf(file="fig_4.pdf")
-heatmap.2(conf_table, Rowv=F, Colv = F, density.info = "none", trace="none", col=bluered, margins = c(7,7) )
+pdf(file="fig_4.pdf", width = 10, height=7)
+heatmap.2(conf_table, Rowv=F, Colv = F, density.info = "none", trace="none", col=bluered, 
+          key.xlab="number of predictions", xlab="predicted classes", ylab="true classes", margins = c(9,9) )
 dev.off()
 
 ## NIBR PDXE
@@ -130,6 +138,7 @@ write.table(res, file="res_tissue_nibr_equal_groups.txt")
 write.table(pred_obs, file="pred_obs_tissue_nibr_equal_groups.txt")
 
 # plotting
+
 conf_table <- matrix(NA, nrow=length(tissues), ncol=length(tissues))
 rownames(conf_table) <- tissues
 colnames(conf_table) <- tissues
